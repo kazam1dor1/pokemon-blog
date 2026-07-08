@@ -2,6 +2,7 @@
 
 import { supabase } from "@/app/utils/supabase"; // 🌟 受話器をインポート
 import { notFound } from "next/navigation";
+import DeleteButton from "@/app/components/DeleteButton";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -26,9 +27,12 @@ export default async function ArticleDetail({ params }: Props) {
   // 3. 見つかった記事を表示する！
   return (
     <article className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-sm">
-      {/* 日付 */}
-      <div className="text-sm text-slate-400 mb-2">{article.date}</div>
-      
+      {/* 日付 と 削除ボタン*/}
+      <div className="flex justify-between items-center mb-2">
+        <div className="text-sm text-slate-400">{article.date}</div>
+        <DeleteButton id={article.id} /> {/* 🌟 ここにボタンをはめ込み、IDを渡す！ */}
+      </div>
+
       {/* タイトル */}
       <h1 className="text-3xl font-bold text-slate-800 mb-4">
         {article.title}

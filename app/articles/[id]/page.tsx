@@ -56,23 +56,34 @@ export default async function ArticleDetail({ params }: Props) {
       
       {/* 本文（改行をそのまま画面に反映させる設定） */}
       <div className="prose max-w-none text-slate-700">
-        <ReactMarkdown
-        components={{
-          // 🌟 リンク（aタグ）のルールを上書きする！
-          a: ({ node, href, children, ...props }) => {
-            const text = String(children);
-            // もし「リンク先のURL」と「画面に表示する文字」が全く同じならカード化する
-            if (href === text && href) {
-              return <LinkCard url={href} />;
+      <ReactMarkdown
+          components={{
+            a: (props) => {
+              const { href, children } = props;
+              
+              // 1. 文字列として安全に取り出し、前後の見えない空白を消去 (trim)
+              const text = String(children).trim();
+              
+              // 2. URLも安全な形に戻し、前後の空白を消去
+              const decodedHref = decodeURI(href || "").trim();
+              
+              // 3. 一番の罠である「末尾のスラッシュ (/)」を両方から削り落として比較する
+              const isMatch = text.replace(/\/$/, "") === decodedHref.replace(/\/$/, "");
+              
+              if (href && isMatch) {
+                return <LinkCard url={href} />;
+              }
+              
+              return (
+                <a href={href || ""} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                  {children}
+                </a>
+              );
             }
-            return (
-              <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline" {...props}>
-                {children}
-              </a>
-            );
-          }
-        }}
-        >{article.content}</ReactMarkdown>
+          }}
+        >
+          {article.content}
+        </ReactMarkdown>
       </div>
     </article>
   );

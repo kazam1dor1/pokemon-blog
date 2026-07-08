@@ -5,6 +5,8 @@ import { notFound } from "next/navigation";
 import DeleteButton from "@/app/components/DeleteButton";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
+import LinkCard from "@/app/components/LinkCard";
+
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -54,7 +56,23 @@ export default async function ArticleDetail({ params }: Props) {
       
       {/* 本文（改行をそのまま画面に反映させる設定） */}
       <div className="prose max-w-none text-slate-700">
-        <ReactMarkdown>{article.content}</ReactMarkdown>
+        <ReactMarkdown
+        components={{
+          // 🌟 リンク（aタグ）のルールを上書きする！
+          a: ({ node, href, children, ...props }) => {
+            const text = String(children);
+            // もし「リンク先のURL」と「画面に表示する文字」が全く同じならカード化する
+            if (href === text && href) {
+              return <LinkCard url={href} />;
+            }
+            return (
+              <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline" {...props}>
+                {children}
+              </a>
+            );
+          }
+        }}
+        >{article.content}</ReactMarkdown>
       </div>
     </article>
   );

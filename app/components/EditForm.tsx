@@ -4,6 +4,9 @@
 import { useState } from "react";
 import { supabase } from "../utils/supabase";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
+
+const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false});
 
 // 🌟 親（ページ）から、元の記事データ（article）を受け取る！
 export default function EditForm({ article }: { article: any }) {
@@ -61,10 +64,14 @@ export default function EditForm({ article }: { article: any }) {
       </div>
 
       {/* 本文入力 */}
-      <div>
+      <div data-color-model="light">
         <label className="block text-sm font-medium text-slate-700 mb-1">本文</label>
-        <textarea required rows={5} value={content} onChange={(e) => setContent(e.target.value)} className="w-full border border-slate-300 rounded-md p-2" />
-      </div>
+        <MDEditor
+          value={content}
+          onChange={(val) => setContent(val || "")}
+          height={400}
+        />
+        </div>
 
       <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 w-full font-bold mt-4 shadow-sm">
         更新する

@@ -1,6 +1,9 @@
 // app/page.tsx
 import ArticleCard from "./components/ArticleCard";
 import { supabase } from "./utils/supabase"; // 🌟 さっき作った受話器をインポート
+import Link from "next/link";
+
+
 
 // 🌟 関数に「async（非同期）」をつけて、データの到着を待てるようにする
 export default async function Home() {
@@ -19,7 +22,12 @@ export default async function Home() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-800 mb-6">最新の記事一覧</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-slate-800">最新の記事一覧</h1>
+        <Link href="/create" className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 font-bold text-sm shadow-sm">
+          ＋ 新しい記事を書く
+        </Link>
+      </div>
       
       <div className="grid gap-4">
         {/* 取得した本物のデータをカードに流し込む */}

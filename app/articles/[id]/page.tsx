@@ -4,6 +4,7 @@ import { supabase } from "@/app/utils/supabase"; // 🌟 受話器をインポ�
 import { notFound } from "next/navigation";
 import DeleteButton from "@/app/components/DeleteButton";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -52,8 +53,8 @@ export default async function ArticleDetail({ params }: Props) {
       <hr className="border-slate-100 mb-6" />
       
       {/* 本文（改行をそのまま画面に反映させる設定） */}
-      <div className="text-slate-600 leading-relaxed whitespace-pre-wrap">
-        {article.content}
+      <div className="prose max-w-none text-slate-700">
+        <ReactMarkdown>{article.content}</ReactMarkdown>
       </div>
     </article>
   );

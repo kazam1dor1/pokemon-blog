@@ -1,36 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ポケキット (Pokekit) - サークル公式ポータルサイト
 
-## Getting Started
+九州工業大学のポケモンサークル「ポケキット」の公式ポータルサイトおよびブログシステムです。
+サークルメンバーの活動記録やイベント告知を、誰でも簡単に発信・共有できる環境を目指して開発しました。
 
-First, run the development server:
+## 開発の背景と目的
+これまでサークル内の情報共有を対内向けのdiscordでのみ行っていました。対外向けの公式SNSはありましたが、長期的な記録を残すことが難しいといった課題がありました。サークルを運営する中で、「代替わりをしてもサークルの資産（イベント記録など）が残り続け、新入生にも魅力が伝わるハブとなるサイトを作りたい」と考え、本システムを自ら企画・開発しました。
+不特定多数が閲覧することを考慮し、個人情報は載せず、サークルの活動予定や活動記録に特化した設計にしています。
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 主な機能
+- **サークル紹介ハブ:** トップページから活動内容、スケジュール、Q&Aへアクセス可能。
+- **ブログ記事のCRUD操作:** 記事の作成・読み取り・更新・削除がブラウザ上で完結。
+- **Markdown対応リッチエディタ:** リアルタイムプレビュー可能な左右分割エディタを実装。
+- **OGPリンクカード自動生成:** URLを貼り付けるだけで、自動的に画像付きのリンクカードに変換（`@microlink/react`を使用）。
+- **レスポンシブデザイン:** スマートフォンからも快適に閲覧・執筆できるよう最適化。
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 使用技術
+- **Frontend:** Next.js (App Router), React, TypeScript
+- **Styling:** Tailwind CSS
+- **Database (BaaS):** Supabase
+- **Hosting:** Vercel
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 開発における課題と解決策
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Tailwind CSS v4の仕様変更への対応**
+   - **課題:** Markdownの見出しスタイルを適用しようとした際、従来の `tailwind.config.ts` が機能しない問題が発生。
+   - **解決:** 調査の結果、プロジェクトが最新のv4系であり、設定ファイルの仕様が廃止されていることを特定。`app/globals.css` に直接 `@plugin "@tailwindcss/typography";` をインポートする新しい記法へ移行し、解決。
 
-## Learn More
+2. **Markdown内のURLエンコードとOGP判定の不具合**
+   - **課題:** エディタにURLを貼り付けても、リンクカードが生成されるものされないものがある。Markdownライブラリの裏側で特殊文字（`@`など）がURLエンコードされたり、見えない空白や末尾のスラッシュが付与されたりすることで、「テキストとURLの完全一致」の判定をすり抜けてしまうバグが発生。（2026/07/13　s修正できていません）
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 今後の展望 (Future Work)
+- **Supabase Authによる権限管理:** 現在はパブリックな状態であるため、ログイン機能を実装し、認証されたサークルメンバーのみが記事の投稿・編集を行えるようセキュリティを強化する予定です。

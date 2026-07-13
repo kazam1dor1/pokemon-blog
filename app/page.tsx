@@ -1,46 +1,79 @@
 // app/page.tsx
-import ArticleCard from "./components/ArticleCard";
-import { supabase } from "./utils/supabase"; // 🌟 さっき作った受話器をインポート
+import { supabase } from "./utils/supabase";
 import Link from "next/link";
+import DeleteButton from "./components/DeleteButton";
 
+// 🌟 最新の情報を常に取得するおまじない
+export const revalidate = 0;
 
-
-// 🌟 関数に「async（非同期）」をつけて、データの到着を待てるようにする
 export default async function Home() {
-  
-  // 🌟 Supabaseの「articles」テーブルから、すべてのデータ（*）を取得する！
-  const { data: articles, error } = await supabase.from('articles').select('*');
+  // 🌟 記事を取得（トップページなので最新の3件だけ表示するように limit(3) を追加）
+  const { data: articles, error } = await supabase
+    .from("articles")
+    .select("*")
+    .order("date", { ascending: false })
+    .limit(3);
 
-  // もしエラーが起きた場合の処理
   if (error) {
-    console.error("データの取得に失敗しました:", error);
-    return <div>データの読み込みに失敗しました。</div>;
+    return <div className="text-red-500 text-center mt-10">エラーが発生しました: {error.message}</div>;
   }
 
-  // コンソールに出力して確認(デバッグ用)
-  console.log(articles);
-
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-slate-800">最新の記事一覧</h1>
-        <Link href="/create" className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 font-bold text-sm shadow-sm">
-          ＋ 新しい記事を書く
-        </Link>
-      </div>
+    <div className="space-y-20 pb-16">
       
-      <div className="grid gap-4">
-        {/* 取得した本物のデータをカードに流し込む */}
-        {articles?.map((article, index) => (
-          <ArticleCard
-            key={article.id ? article.id.toString() : `temp-${index}`}
-            id={article.id ? article.id.toString() : `temp-${index}`} // 🌟 SupabaseのID(数字)を文字に変換
-            title={article.title || "タイトルなし"}
-            date={article.date || "日付なし"}
-            description={article.description || "説明なし"}
-          />
-        ))}
-      </div>
+      {/* 🟢 1. ヒーローセクション（看板） */}
+      <section className="bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-3xl p-12 text-center shadow-lg mt-4 mx-4 md:mx-0">
+        <h1 className="text-4xl md:text-5xl font-extrabold mb-6 tracking-tight drop-shadow-md">
+        <span className="block">九州工業大学</span>
+        <span className="block">ポケモンサークル</span>
+        </h1>
+        <div className="flex flex-col sm:flex-row justify-center gap-4">
+          <Link href="/about" className="bg-white text-blue-600 font-bold py-3 px-8 rounded-full hover:bg-blue-50 transition shadow-md inline-block">
+            活動内容を見る
+          </Link>
+        </div>
+      </section>
+
+      {/* 🟢 3. 最新のお知らせ・活動記録（今まで作っていたブログ機能） */}
+      <section className="max-w-4xl mx-auto px-4">
+        <div className="flex justify-between items-end mb-8 border-b-2 border-slate-100 pb-4">
+          <h2 className="text-3xl font-bold text-slate-800">
+            最新のお知らせ
+          </h2>
+          <Link href="/create" className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 font-bold text-sm shadow-sm transition">
+            ＋ 新規作成
+          </Link>
+        </div>
+        
+        <div className="space-y-6">
+          {articles?.map((article) => (
+            <div key={article.id} className="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+              <div className="flex justify-between items-center mb-3">
+                <div className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+                  {article.date}
+                </div>
+                <div className="flex gap-2">
+                  <Link href={`/edit/${article.id}`} className="bg-slate-100 text-slate-600 px-3 py-1.5 rounded-md hover:bg-slate-200 font-bold text-xs transition">
+                    編集
+                  </Link>
+                  <DeleteButton id={article.id} />
+                </div>
+              </div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-2">
+                <Link href={`/articles/${article.id}`} className="hover:text-blue-600 transition">
+                  {article.title}
+                </Link>
+              </h3>
+              <p className="text-slate-600">{article.description}</p>
+            </div>
+          ))}
+          
+          {articles?.length === 0 && (
+            <p className="text-center text-slate-500 py-10">まだお知らせはありません。</p>
+          )}
+        </div>
+      </section>
+
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { supabase } from "./utils/supabase";
 import Link from "next/link";
 import DeleteButton from "./components/DeleteButton";
 import AdminOnly from "./components/AdminOnly";
+import LogoutButton from "./components/LogoutButton";
 
 // 🌟 最新の情報を常に取得するおまじない
 export const revalidate = 0;
@@ -41,6 +42,7 @@ export default async function Home() {
         <h2 className="text-3xl font-bold text-slate-800">最新のお知らせ</h2>
           <div className="flex gap-3">
             <AdminOnly>
+              <LogoutButton />
               <Link href="/create" className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 font-bold text-sm shadow-sm transition">
                 ＋ 新規作成
               </Link>

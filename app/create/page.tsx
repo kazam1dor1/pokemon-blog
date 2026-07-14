@@ -1,114 +1,158 @@
 // app/create/page.tsx
-"use client"; // 🌟 ユーザーの入力（ボタンクリックや文字入力）を受け付けるための魔法の言葉
+"use client";
 
 import { useState } from "react";
 import { supabase } from "../utils/supabase";
 import { useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
 import RequireAuth from "../components/RequireAuth";
 
-const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
-
-export default function CreateArticle() {
-  const router = useRouter();
-  
-  // ユーザーが入力した文字を一時的に保存しておくための箱（State）
+export default function CreatePage() {
   const [title, setTitle] = useState("");
-  const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
-  const [content, setContent] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  // 「投稿する」ボタンが押された時の処理
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // 🌟 送信時に画面が勝手にリロードされるのを防ぐ
+    e.preventDefault();
+    setLoading(true);
 
-    // Supabaseの articles テーブルに、入力されたデータを追加（insert）する
-    const { error } = await supabase.from("articles").insert([
-      { 
-        title: title, 
-        date: date, 
-        description: description, 
-        content: content 
+    try {
+      let finalImageUrl = ""; // 最終的にデータベースに保存する画像のURL
+
+      // 1. 画像が選択されている場合、Supabase Storageにアップロード
+      if (imageFile) {
+        // ファイル名が被らないように「現在時刻＋ランダム文字列＋元の拡張子」にする
+        const fileExt = imageFile.name.split('.').pop();
+        const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
+        const filePath = `articles/${fileName}`;
+
+        // 'images' バケットにアップロード
+        const { error: uploadError } = await supabase.storage
+          .from('images')
+          .upload(filePath, imageFile);
+
+        if (uploadError) {
+          throw new Error("画像のアップロードに失敗しました: " + uploadError.message);
+        }
+
+        // アップロード成功後、公開用のURLを取得
+        const { data } = supabase.storage
+          .from('images')
+          .getPublicUrl(filePath);
+        
+        finalImageUrl = data.publicUrl;
       }
-    ]);
 
-    // エラーが起きたら警告を出す
-    if (error) {
+      // 2. データベース（articlesテーブル）に記事のデータを保存
+      // ※ もし画像保存用の列名が 'image_url' でない場合は書き換えてください
+      const { error: insertError } = await supabase.from("articles").insert([
+        {
+          title: title,
+          description: description,
+          image_url: finalImageUrl !== "" ? finalImageUrl : null, // 画像がない場合はnullを入れる
+        },
+      ]);
+
+      if (insertError) {
+        throw new Error("記事の保存に失敗しました: " + insertError.message);
+      }
+
+      // 3. 成功したらトップページに戻る
+      router.push("/");
+      router.refresh();
+      
+    } catch (error: any) {
       alert("エラーが発生しました: " + error.message);
-      return;
+    } finally {
+      setLoading(false);
     }
-
-    // 無事に投稿できたら、トップページに強制移動する
-    alert("記事を投稿しました！");
-    router.push("/");
-    router.refresh(); // トップページの最新データを再読み込み
   };
 
   return (
     <RequireAuth>
-
-      <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-sm mt-8">
-        <h1 className="text-2xl font-bold text-slate-800 mb-6">新しい記事を書く</h1>
+      <div className="max-w-2xl mx-auto mt-10 px-4 mb-20">
+        <h1 className="text-3xl font-bold mb-8 text-slate-800">新規お知らせ作成</h1>
         
-        {/* 投稿フォーム */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-xl shadow-sm border border-slate-100">
           
-          {/* タイトル入力 */}
+          {/* タイトル入力欄 */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">タイトル</label>
-            <input 
-              type="text" 
-              required 
-              value={title} 
-              onChange={(e) => setTitle(e.target.value)} 
-              className="w-full border border-slate-300 rounded-md p-2" 
+            <label htmlFor="title" className="block text-sm font-bold text-slate-700 mb-2">
+              タイトル <span className="text-red-500">*</span>
+            </label>
+            <input
+              id="title"
+              type="text"
+              required
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full border border-slate-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              placeholder="例：新入生歓迎会のお知らせ"
             />
           </div>
 
-          {/* 日付入力 */}
+          {/* 画像アップロード欄 */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">日付</label>
-            <input 
-              type="text" 
-              placeholder="例: 2026.07.08" 
-              required 
-              value={date} 
-              onChange={(e) => setDate(e.target.value)} 
-              className="w-full border border-slate-300 rounded-md p-2" 
+            <label htmlFor="image" className="block text-sm font-bold text-slate-700 mb-2">
+              見出し画像（任意）
+            </label>
+            <input
+              id="image"
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                if (e.target.files && e.target.files.length > 0) {
+                  setImageFile(e.target.files[0]);
+                } else {
+                  setImageFile(null);
+                }
+              }}
+              // ファイル選択ボタンを少しおしゃれにするCSS
+              className="w-full text-slate-600 border border-slate-300 rounded-md p-2 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition cursor-pointer"
             />
+            {imageFile && (
+              <p className="text-sm text-green-600 mt-2 font-medium">
+                選択中: {imageFile.name}
+              </p>
+            )}
           </div>
 
-          {/* 概要入力 */}
+          {/* 内容（説明）入力欄 */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">概要（一覧に表示）</label>
-            <textarea 
-              required 
-              value={description} 
-              onChange={(e) => setDescription(e.target.value)} 
-              className="w-full border border-slate-300 rounded-md p-2" 
-            />
-          </div>
-
-          {/* 本文入力 */}
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">本文</label>
-            <MDEditor 
-              value={content} 
-              onChange={(val) => setContent(val || "")} 
-              height={400} 
+            <label htmlFor="description" className="block text-sm font-bold text-slate-700 mb-2">
+              本文 <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              id="description"
+              required
+              rows={8}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full border border-slate-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              placeholder="お知らせの詳細を記入してください..."
             />
           </div>
 
           {/* 送信ボタン */}
-          <button 
-            type="submit" 
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 w-full font-bold mt-4"
-          >
-            投稿する
-          </button>
+          <div className="pt-4 border-t border-slate-100 flex justify-end gap-3">
+            <button
+              type="button"
+              onClick={() => router.push("/")}
+              className="px-6 py-3 rounded-md font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition"
+            >
+              キャンセル
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-blue-600 text-white px-8 py-3 rounded-md hover:bg-blue-700 disabled:bg-slate-400 font-bold shadow-sm transition"
+            >
+              {loading ? "保存中..." : "お知らせを公開する"}
+            </button>
+          </div>
         </form>
       </div>
-    
     </RequireAuth>
   );
 }

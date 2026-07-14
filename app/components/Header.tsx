@@ -32,9 +32,11 @@ export default function Header() {
   // ログアウトボタンが押された時の処理
   const handleLogout = async () => {
     await supabase.auth.signOut();
+
+    setIsLoggedIn(false);
+
     alert("ログアウトしました");
-    router.push("/");
-    router.refresh();
+    window.location.href = "/";
   };
 
   return (
@@ -60,7 +62,7 @@ export default function Header() {
           {isLoggedIn ? (
             <button
               onClick={handleLogout}
-              className="bg-blue-700 hover:bg-blue-800 text-white text-sm font-bold py-2 px-4 rounded transition shadow-sm"
+              className="bg-red-600 hover:bg-blue-800 text-white text-sm font-bold py-2 px-4 rounded transition shadow-sm"
             >
               ログアウト
             </button>

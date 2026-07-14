@@ -128,7 +128,7 @@ export default function EditArticle() {
 
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">日付</label>
-            <input type="text" placeholder="例: 2026.07.08" required value={date} onChange={(e) => setDate(e.target.value)} className="w-full border border-slate-300 rounded-md p-2" />
+            <input type="date" required value={date} onChange={(e) => setDate(e.target.value)} className="w-full border border-slate-300 rounded-md p-2" />
           </div>
 
           <div>

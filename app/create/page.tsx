@@ -5,6 +5,7 @@ import { useState } from "react";
 import { supabase } from "../utils/supabase";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
+import RequireAuth from "../components/RequireAuth";
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
@@ -44,66 +45,70 @@ export default function CreateArticle() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-sm mt-8">
-      <h1 className="text-2xl font-bold text-slate-800 mb-6">新しい記事を書く</h1>
-      
-      {/* 投稿フォーム */}
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <RequireAuth>
+
+      <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-sm mt-8">
+        <h1 className="text-2xl font-bold text-slate-800 mb-6">新しい記事を書く</h1>
         
-        {/* タイトル入力 */}
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">タイトル</label>
-          <input 
-            type="text" 
-            required 
-            value={title} 
-            onChange={(e) => setTitle(e.target.value)} 
-            className="w-full border border-slate-300 rounded-md p-2" 
-          />
-        </div>
+        {/* 投稿フォーム */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          
+          {/* タイトル入力 */}
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">タイトル</label>
+            <input 
+              type="text" 
+              required 
+              value={title} 
+              onChange={(e) => setTitle(e.target.value)} 
+              className="w-full border border-slate-300 rounded-md p-2" 
+            />
+          </div>
 
-        {/* 日付入力 */}
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">日付</label>
-          <input 
-            type="text" 
-            placeholder="例: 2026.07.08" 
-            required 
-            value={date} 
-            onChange={(e) => setDate(e.target.value)} 
-            className="w-full border border-slate-300 rounded-md p-2" 
-          />
-        </div>
+          {/* 日付入力 */}
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">日付</label>
+            <input 
+              type="text" 
+              placeholder="例: 2026.07.08" 
+              required 
+              value={date} 
+              onChange={(e) => setDate(e.target.value)} 
+              className="w-full border border-slate-300 rounded-md p-2" 
+            />
+          </div>
 
-        {/* 概要入力 */}
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">概要（一覧に表示）</label>
-          <textarea 
-            required 
-            value={description} 
-            onChange={(e) => setDescription(e.target.value)} 
-            className="w-full border border-slate-300 rounded-md p-2" 
-          />
-        </div>
+          {/* 概要入力 */}
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">概要（一覧に表示）</label>
+            <textarea 
+              required 
+              value={description} 
+              onChange={(e) => setDescription(e.target.value)} 
+              className="w-full border border-slate-300 rounded-md p-2" 
+            />
+          </div>
 
-        {/* 本文入力 */}
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">本文</label>
-          <MDEditor 
-            value={content} 
-            onChange={(val) => setContent(val || "")} 
-            height={400} 
-          />
-        </div>
+          {/* 本文入力 */}
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">本文</label>
+            <MDEditor 
+              value={content} 
+              onChange={(val) => setContent(val || "")} 
+              height={400} 
+            />
+          </div>
 
-        {/* 送信ボタン */}
-        <button 
-          type="submit" 
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 w-full font-bold mt-4"
-        >
-          投稿する
-        </button>
-      </form>
-    </div>
+          {/* 送信ボタン */}
+          <button 
+            type="submit" 
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 w-full font-bold mt-4"
+          >
+            投稿する
+          </button>
+        </form>
+      </div>
+    
+    </RequireAuth>
   );
 }

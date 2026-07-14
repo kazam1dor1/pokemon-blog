@@ -2,6 +2,7 @@
 import { supabase } from "./utils/supabase";
 import Link from "next/link";
 import DeleteButton from "./components/DeleteButton";
+import AdminOnly from "./components/AdminOnly";
 
 // 🌟 最新の情報を常に取得するおまじない
 export const revalidate = 0;
@@ -36,14 +37,16 @@ export default async function Home() {
 
       {/* 🟢 3. 最新のお知らせ・活動記録（今まで作っていたブログ機能） */}
       <section className="max-w-4xl mx-auto px-4">
-        <div className="flex justify-between items-end mb-8 border-b-2 border-slate-100 pb-4">
-          <h2 className="text-3xl font-bold text-slate-800">
-            最新のお知らせ
-          </h2>
-          <Link href="/create" className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 font-bold text-sm shadow-sm transition">
-            ＋ 新規作成
-          </Link>
-        </div>
+      <div className="flex justify-between items-end mb-8 border-b-2 border-slate-100 pb-4">
+        <h2 className="text-3xl font-bold text-slate-800">最新のお知らせ</h2>
+          <div className="flex gap-3">
+            <AdminOnly>
+              <Link href="/create" className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 font-bold text-sm shadow-sm transition">
+                ＋ 新規作成
+              </Link>
+            </AdminOnly>
+          </div>
+      </div>
         
         <div className="space-y-6">
           {articles?.map((article) => (
@@ -52,12 +55,15 @@ export default async function Home() {
                 <div className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
                   {article.date}
                 </div>
-                <div className="flex gap-2">
-                  <Link href={`/edit/${article.id}`} className="bg-slate-100 text-slate-600 px-3 py-1.5 rounded-md hover:bg-slate-200 font-bold text-xs transition">
-                    編集
-                  </Link>
-                  <DeleteButton id={article.id} />
-                </div>
+                <AdminOnly>
+                  <div className="flex gap-2">
+                    <Link href={`/edit/${article.id}`} className="bg-slate-100 text-slate-600 px-3 py-1.5 rounded-md hover:bg-slate-200 font-bold text-xs transition">
+                      編集
+                    </Link>
+                    <DeleteButton id={article.id} />
+                  </div>
+                </AdminOnly>
+                
               </div>
               <h3 className="text-2xl font-bold text-slate-800 mb-2">
                 <Link href={`/articles/${article.id}`} className="hover:text-blue-600 transition">

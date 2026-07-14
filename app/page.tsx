@@ -80,8 +80,18 @@ export default async function Home() {
             <p className="text-center text-slate-500 py-10">まだお知らせはありません。</p>
           )}
         </div>
-      </section>
 
+        <div className="mt-10 text-center mb-20">
+        <Link 
+          href="/articles" 
+          className="inline-block bg-slate-100 text-blue-600 font-bold py-3 px-8 rounded-full border border-blue-200 hover:bg-blue-50 transition shadow-sm"
+        >
+          すべてのお知らせを見る →
+        </Link>
+      </div>
+
+      </section>
+      
     </div>
   );
 }

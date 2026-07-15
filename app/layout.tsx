@@ -5,8 +5,8 @@ import Header from "./components/Header";
 
 
 export const metadata: Metadata = {
-  title: "ポケキット公式ブログ",
-  description: "九州工業大学ポケモンサークル公式ブログです",
+  title: "ポケキット公式サイト",
+  description: "九州工業大学ポケモンサークル公式サイトです",
 };
 
 export default function RootLayout({

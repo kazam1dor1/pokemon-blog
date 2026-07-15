@@ -23,14 +23,14 @@ export default async function Home() {
     <div className="space-y-20 pb-16">
       
       {/* 🟢 1. ヒーローセクション（看板） */}
-      <section className="text-black rounded-3xl p-12 text-center shadow-lg mt-4 mx-4 md:mx-0">
-        <h1 className="text-4xl md:text-5xl font-extrabold mb-6 tracking-tight drop-shadow-md">
+      <section className="text-black text-center p-5 mt-4 mx-4 md:mx-0">
+        <h1 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight drop-shadow-md">
           <span className="block">九州工業大学</span>
           <span className="block">ポケモンサークル</span>
         </h1>
         
         {/* 🌟 ここを改良！ロゴの背景にだけ角丸の「白いプレート」を敷く */}
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-6">
             <img 
               src="/logo-text.jpg"
               alt="ポケキットロゴ" 
@@ -46,7 +46,7 @@ export default async function Home() {
   </section>
 
       {/* 🟢 3. 最新のお知らせ・活動記録（今まで作っていたブログ機能） */}
-      <section className="max-w-4xl mx-auto px-4">
+      <section className="max-w-4xl mx-auto px-4 -mt-4">
       <div className="flex justify-between items-end mb-8 border-b-2 border-slate-100 pb-4">
         <h2 className="text-3xl font-bold text-slate-800">最新のお知らせ</h2>
           <div className="flex gap-3">

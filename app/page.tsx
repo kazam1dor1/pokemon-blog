@@ -23,17 +23,27 @@ export default async function Home() {
     <div className="space-y-20 pb-16">
       
       {/* 🟢 1. ヒーローセクション（看板） */}
-      <section className="bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-3xl p-12 text-center shadow-lg mt-4 mx-4 md:mx-0">
+      <section className="text-black rounded-3xl p-12 text-center shadow-lg mt-4 mx-4 md:mx-0">
         <h1 className="text-4xl md:text-5xl font-extrabold mb-6 tracking-tight drop-shadow-md">
-        <span className="block">九州工業大学</span>
-        <span className="block">ポケモンサークル</span>
+          <span className="block">九州工業大学</span>
+          <span className="block">ポケモンサークル</span>
         </h1>
-        <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <Link href="/about" className="bg-white text-blue-600 font-bold py-3 px-8 rounded-full hover:bg-blue-50 transition shadow-md inline-block">
-            活動内容を見る
-          </Link>
+        
+        {/* 🌟 ここを改良！ロゴの背景にだけ角丸の「白いプレート」を敷く */}
+        <div className="flex justify-center mb-8">
+            <img 
+              src="/logo-text.jpg"
+              alt="ポケキットロゴ" 
+              className="h-32 md:h-48 object-contain" 
+            />
         </div>
-      </section>
+
+    <div className="flex flex-col sm:flex-row justify-center gap-4">
+      <Link href="/about" className="bg-sky-500 text-white font-bold py-3 px-8 rounded-full hover:bg-sky-600 transition shadow-md inline-block">
+        活動内容を見る
+      </Link>
+    </div>
+  </section>
 
       {/* 🟢 3. 最新のお知らせ・活動記録（今まで作っていたブログ機能） */}
       <section className="max-w-4xl mx-auto px-4">

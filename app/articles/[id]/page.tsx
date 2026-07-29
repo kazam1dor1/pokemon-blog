@@ -16,6 +16,8 @@ export default async function ArticleDetail({ params }: Props) {
   // 1. URLからIDを受け取る
   const { id } = await params;
 
+  const { data: { session } } = await supabase.auth.getSession();
+
   // 2. データベースから、IDと同じ記事を探し出す！
   const { data: article, error } = await supabase
   .from('articles')
@@ -34,16 +36,19 @@ export default async function ArticleDetail({ params }: Props) {
       {/* 日付 と 削除ボタン*/}
       <div className="flex justify-between items-center mb-2">
         <div className="text-sm text-slate-400">{article.date}</div>
-        <div className="flex gap-2">
-          {/*編集ボタン*/}
-          <Link
-            href={`/edit/${article.id}`}
-            className="bg-blue-200 text-slate-700 px-4 py-2 rounded-md hover:bg-slate-300 font-bold text-sm shadow-sm">
-            編集する
-          </Link>
-          {/*削除ボタン*/}
-          <DeleteButton id={article.id} />
-        </div>
+
+        {session && (
+          <div className="flex gap-2">
+            {/*編集ボタン*/}
+            <Link
+              href={`/edit/${article.id}`}
+              className="bg-blue-200 text-slate-700 px-4 py-2 rounded-md hover:bg-slate-300 font-bold text-sm shadow-sm">
+              編集する
+            </Link>
+            {/*削除ボタン*/}
+            <DeleteButton id={article.id} />
+          </div>
+        )}
       </div>
 
       {/* タイトル */}

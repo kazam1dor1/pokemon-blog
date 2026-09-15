@@ -31,7 +31,7 @@ export default function Footer() {
 
         {/* コピーライト（著作権表示） */}
         <div className="text-sm text-slate-500">
-          © {new Date().getFullYear()} 九州工業大学 ポケモンサークル PokeK!T
+          © {new Date().getFullYear()} 九州工業大学 ポケモンサークル PokeKIT
         </div>
         
       </div>

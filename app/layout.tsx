@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Link from "next/link"; 
 import Header from "./components/Header";
-
+import Footer from "./components/Footer";
 
 export const metadata: Metadata = {
   title: "ポケキット公式サイト",
@@ -21,6 +21,8 @@ export default function RootLayout({
         <main className="max-w-4xl mx-auto p-4 mt-4">
           {children}
         </main>
+        
+        <Footer />
 
       </body>
     </html>
